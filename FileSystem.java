@@ -8,16 +8,16 @@ public class FileSystem
 	private final int SEEK_CUR = 1;
 	private final int SEEK_END = 2;
 	
-	public FileSystem(int diskBlock)
+	public FileSystem(int diskBlocks)
 	{
 		superblock = new SuperBlock(diskBlocks);
 		
-		directory = new Directory(superblock.inodeBlocks);
+		directory = new Directory(superblock.totalInodes);
 		
 		filetable = new FileTable(directory);
 		
 		FileTableEntry dirEnt = open("/" , "r");
-		int diSize = fsize(dirEnt);
+		int dirSize = fsize(dirEnt);
 		if (dirSize > 0)
 		{
 			byte[] dirData = new byte[dirSize];
@@ -38,7 +38,12 @@ public class FileSystem
 		
 	public FileTableEntry open(String filename, String mode)
 	{
-		
+		FileTableEntry retVal = filetable.falloc(filename, mode);
+		if (mode.equals("w")) {
+			if (deallocAllBlocks(retVal) == false) // need to implement
+				return null;
+		}
+		return retVal;
 	}	
 		
 	public boolean close(FileTableEntry ftEnt) 

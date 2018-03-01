@@ -9,7 +9,7 @@ public class Inode{
 	public short indirect;			//Indirect pointer
 	
 	//Default constructor
-	Inode(){
+	public Inode(){
 		length = 0;
 		count = 0;
 		flag = 1;
@@ -19,10 +19,12 @@ public class Inode{
 		indirect = -1;
 	}
 	
-	Inode(short iNumber){		//Retrieve the Inode from disk
+	public Inode(short iNumber){		//Retrieve the Inode from disk
 		//Need to implement
 	}
-	int toDisk(short iNumber){	//Save to the disk as i-th inode
-		//Need to implement		
+
+	public int toDisk(short iNumber) {	//Save to the disk as i-th inode
+		//Need to implement
+		return 0;
 	}
 }
