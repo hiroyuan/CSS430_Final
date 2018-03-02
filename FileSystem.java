@@ -38,7 +38,12 @@ public class FileSystem
 		
 	public FileTableEntry open(String filename, String mode)
 	{
-		
+		FileTableEntry retVal = filetable.falloc(filename, mode);
+		if (mode == "w") {
+			if (deallocAllBlocks(retVal) == false)
+				return null;
+		}
+		return retVal;
 	}	
 		
 	public boolean close(FileTableEntry ftEnt) 
