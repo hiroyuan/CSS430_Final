@@ -1,6 +1,7 @@
 public class Directory {
    private static int maxChars = 30; // max characters of each file name
    private static short ERROR = -1;		//Error return value
+   private static int ALLOC_BYTE = 64;
    
 	
    // Directory entries
