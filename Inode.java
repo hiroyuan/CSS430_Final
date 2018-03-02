@@ -54,4 +54,13 @@ public class Inode{
 		//Need to implement
 		return 0;
 	}
+	public short getIndexBlockNumber(){
+		
+	}
+	public boolean setIndexBlock(short indexBlockNumber){
+		
+	}
+	public short findTargetBlock(int offset){
+		
+	}
 }
