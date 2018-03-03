@@ -15,6 +15,7 @@ public class FileTable {
    // major public methods
    public synchronized FileTableEntry falloc( String filename, String mode ) {
       // allocate a new file (structure) table entry for this file name
+<<<<<<< HEAD
 	  FileTableEntry fte = null;
 	  Inode inode = null;
 	  // allocate/retrieve and register the corresponding inode using dir
@@ -69,6 +70,39 @@ public class FileTable {
 	  fte = new FileTableEntry(inode,inumber,mode);
 	  table.addElement(fte);
 	  return fte;
+=======
+      // allocate/retrieve and register the corresponding inode using dir
+      // increment this inode's count
+      // immediately write back this inode to the disk??????????????????????????????
+      // return a reference to this file (structure) table entry
+	if(mode.equals("w") || mode.equals("w+") || mode.equals("a")
+	{
+		FileTableEntry fte = null;
+		Inode inode = null;
+		//check if filename exists within directory
+		// if filename dne
+			// create new file: ialloc to allocate new inode number for filename
+		// else
+			// retrieve this FileTableEntry from Directory
+		int iNumber = namei(filename);
+		if(iNumber == -1) // ASSUME -1 TO BE RETURN VALUE WHEN NOT FOUND?
+		{
+			iNumber = dir.ialloc(filename); // allocate new inode number in directory for this filename
+			inode = new Inode(iNumber);
+
+			fte = new FileTableEntry(inode, iNumber, mode);
+		}
+		else
+		{
+			// retrieve from the existing iNumber from the directory
+			inode = new Inode(iNumber);
+			
+			fte = new FileTableEntry(inode, iNumber, mode);
+		}
+
+	}
+	
+>>>>>>> origin/master
    }
 
    public synchronized boolean ffree( FileTableEntry entry ) {
