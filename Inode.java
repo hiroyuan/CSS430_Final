@@ -7,7 +7,7 @@ public class Inode{
 	
 	public int length;			//File sizes in bytes
 	public short count;			//# file-table entries point to this
-	public short flag; 			//0 = unused, 1= used
+	public short flag; 			//0 = unused, 1= used,...
 	public short direct[] = new short[directSize];	//Direct pointers
 	public short indirect;			//Indirect pointer
 	
@@ -52,7 +52,35 @@ public class Inode{
 
 	public int toDisk(short iNumber) {	//Save to the disk as i-th inode
 		//Need to implement
-		return 0;
+		byte [] data = new byte[iNodeSize];
+
+        int offset = 0;
+
+        SysLib.int2bytes(length, data, offset);
+        offset += intBlock;
+        SysLib.short2bytes(count, data, offset);
+        offset += shortBlock;
+        SysLib.short2bytes(flag, data, offset);
+        offset += shortBlock;
+
+        for (int i = 0; i < directSize; i++){
+            SysLib.short2bytes(direct[i], data, offset);
+            offset += shortBlock;
+        }
+
+        SysLib.short2bytes(indirect, data, offset);
+        offset += shortBlock;
+
+        int blockNumber = 1 + iNumber / blockSize;
+        byte[] newData = new byte[maxBytes];
+        SysLib.rawread(blockNumber,newData);
+
+        offset = (iNumber % blockSize) * iNodeSize;
+
+        System.arraycopy(data, 0, newData, offset, iNodeSize);
+        SysLib.rawwrite(blockNumber,newData);
+
+        return 0;
 	}
 	public short getIndexBlockNumber(){
 		
