@@ -1,5 +1,6 @@
 class SuperBlock{
 	private final int DEFAULT_INODE_BLOCK = 64;
+	private final int BLOCKS = 1000; //Use 1000 for number of block for this project
 	public int totalBlocks;			//The number of disk block
 	public int totalInodes;			//The number of Inodes
 	public int freeList;			//The block number of the free list's head
@@ -35,17 +36,52 @@ class SuperBlock{
 			byte[] block = new byte[Disk.blockSize];
 			SysLib.rawread(0, block);
 			int retVal = freeList; // return current free block
-			freeList = SysLib.bytes2int(block, 8); // find next free block
+			freeList = SysLib.bytes2int(block, 0); // find next free block
 			return retVal;
 		}
 		return -1;
 	}
 
 	public void returnBlock(int blockNumber) {
-		
+
 	}
 
-	public void format(int size) {
+	public void format(int numberOfInode) {
+		if (numberOfInode < 0)
+			numberOfInode = DEFAULT_INODE_BLOCK;
 
+		// initialize iNodes
+		totalInodes = numberOfInode;
+		for (int i = 0; i < totalInodes; i++) {
+			Inode iNode = new Inode();
+			iNode.toDisk((short) i);
+		}
+
+		freeList = totalInodes / 16 + 1;
+
+		// initialize the every free blocks except last block
+		// free blocks should contain next free block number
+		// last free block should contain -1 for freeList
+		byte[] block;
+		for (int i = freeList; i < BLOCKS; i++) {
+			block = new byte[Disk.blockSize];
+			if (i <= BLOCKS - 2) {
+				// format block here
+				for (int index = 0; j < Disk.blockSize; index++)
+					block[index] = 0;
+
+				SysLib.int2bytes(i + 1, block, 0); //assign next free block into the block
+			}
+			else if (i == BLOCKS - 1) {
+				for (int index = 0; index < Disk.blockSize; index++)
+					block[index] = 0
+				
+				SysLib.int2bytes(-1, lastBlock, 0); //last block should point -1 for freeList
+													//since there is no more free block
+			}
+			SysLib.rawwrite(i, block);
+		}
+
+		sync();
 	}
 }
