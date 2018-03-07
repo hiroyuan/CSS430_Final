@@ -27,7 +27,7 @@ class SuperBlock{
 		byte[] block = new byte[Disk.blockSize];
 		SysLib.int2bytes(totalBlocks, block, 0); // turn blocks into bytes
 		SysLib.int2bytes(totalInodes, block, 4); // turn inodes into bytes
-		SysLib.int2bytes(freeList, block, 8); // turn free list into bytes
+		SysLib.int2bytes(freeList, block, 8); // turn free list into bytes, begins from offset 8
 		SysLib.rawwrite(0, block); // write
 	}
 
