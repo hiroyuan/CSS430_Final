@@ -116,12 +116,11 @@ public class Inode{
         {
             return direct[blockIndex];
         }
-        else // seekPointer points to a byte within one block within the indirect block
+        else // seekPointer points to a byte within one block of data pointed by indirect pointer
         {
-            //have to find out which one of the block within the indirect block is seekPointer pointing to
-            byte[] indirectBlock = new byte[MAX_BYTES];
             //reading in an indirect block from Disk, each 2 bytes of indirect block represents data block
             //, similar to direct block with each 2 byte for data
+            byte[] indirectBlock = new byte[MAX_BYTES];
             SysLib.rawread(indirect, indirectBlock);
             
             int pointerNumber = blockIndex - 11; // represent an index out of the 256 pointers
