@@ -82,6 +82,16 @@ public class SysLib {
     }
     
     //************************PROJECT************************
+    public static int read( int fd, byte[] buffer ) {
+        return Kernel.interrupt( Kernel.INTERRUPT_SOFTWARE,
+                                Kernel.READ, fd, buffer );
+    }
+    
+    public static int write( int fd, byte[] buffer ) {
+        return Kernel.interrupt( Kernel.INTERRUPT_SOFTWARE,
+                                Kernel.WRITE, fd, buffer );
+    }
+    
         public static int open( String filename, String mode ) {
         String[] args = new String[2];
         args[0] = filename;
@@ -95,7 +105,7 @@ public class SysLib {
                                 Kernel.CLOSE, fd, null );
     }
     
-    public static int size( int fd ) {
+    public static int fsize( int fd ) {
         return Kernel.interrupt( Kernel.INTERRUPT_SOFTWARE,
                                 Kernel.SIZE, fd, null );
     }
