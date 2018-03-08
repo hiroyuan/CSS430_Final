@@ -98,7 +98,7 @@ class SuperBlock{
           	sync();
             
           	return true;
-        	}
+        }
         else
           	return false;
     }
