@@ -82,9 +82,7 @@ public class SysLib {
     }
     
     //************************PROJECT************************
-    
-    //MODIFY PARAM????
-    public static int open( String filename, String mode ) {
+        public static int open( String filename, String mode ) {
         String[] args = new String[2];
         args[0] = filename;
         args[1] = mode;

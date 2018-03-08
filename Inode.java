@@ -127,7 +127,7 @@ public class Inode{
             int blockOffset = pointerNumber * 2; // 1 pointer = 2 bytes -> offset of 2 byte indices within byte[512]
             
             //get short value starting from blockOffset from indirectBlock
-            return SysLib.short2bytes(indirectBlock, blockOffset);
+            return SysLib.bytes2short(indirectBlock, blockOffset);
         }
         
     }
