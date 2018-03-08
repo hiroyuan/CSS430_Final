@@ -1,15 +1,18 @@
 public class Inode{
 	private final static int iNodeSize = 32;			//Fix size for an Inode is 32 bytes
 	private final static int directSize = 11;			// # of direct Pointers
+	private final static int MAX_BYTES = 512;			//Maximum size for a block
+	private final static int intBlock = 4;				//Int using 4 offsets
+	private final static int shortBlock = 2;			//Short using 2 offsets
 	
 	public int length;			//File sizes in bytes
 	public short count;			//# file-table entries point to this
-	public short flag; 			//0 = unused, 1= used
+	public short flag; 			//0 = unused, 1= used,...
 	public short direct[] = new short[directSize];	//Direct pointers
 	public short indirect;			//Indirect pointer
 	
 	//Default constructor
-	Inode(){
+	public Inode(){
 		length = 0;
 		count = 0;
 		flag = 1;
@@ -19,10 +22,73 @@ public class Inode{
 		indirect = -1;
 	}
 	
-	Inode(short iNumber){		//Retrieve the Inode from disk
+	public Inode(short iNumber){		//Retrieve the Inode from disk
 		//Need to implement
+		//find the number of blocks to read
+        int blockNumber = 1 + iNumber / blockSize;
+
+        //allocate bytes
+        byte[] data = new byte[maxBytes];
+        SysLib.rawread(blockNumber,data);
+
+        //define the offset
+        int offset = (iNumber % 16) * iNodeSize;
+
+        //create space
+        length = SysLib.bytes2int(data, offset);
+        offset += intBlock;
+        count = SysLib.bytes2short(data, offset);
+        offset += shortBlock;
+        flag = SysLib.bytes2short(data, offset);
+        offset += shortBlock;
+
+        for (int i = 0; i < directSize; i++){
+            direct[i] = SysLib.bytes2short(data, offset);
+            offset += shortBlock;
+        }
+        indirect = SysLib.bytes2short(data, offset);
+        offset += shortBlock;
 	}
-	int toDisk(short iNumber){	//Save to the disk as i-th inode
-		//Need to implement		
+
+	public int toDisk(short iNumber) {	//Save to the disk as i-th inode
+		//Need to implement
+		byte [] data = new byte[iNodeSize];
+
+        int offset = 0;
+
+        SysLib.int2bytes(length, data, offset);
+        offset += intBlock;
+        SysLib.short2bytes(count, data, offset);
+        offset += shortBlock;
+        SysLib.short2bytes(flag, data, offset);
+        offset += shortBlock;
+
+        for (int i = 0; i < directSize; i++){
+            SysLib.short2bytes(direct[i], data, offset);
+            offset += shortBlock;
+        }
+
+        SysLib.short2bytes(indirect, data, offset);
+        offset += shortBlock;
+
+        int blockNumber = 1 + iNumber / blockSize;
+        byte[] newData = new byte[maxBytes];
+        SysLib.rawread(blockNumber,newData);
+
+        offset = (iNumber % blockSize) * iNodeSize;
+
+        System.arraycopy(data, 0, newData, offset, iNodeSize);
+        SysLib.rawwrite(blockNumber,newData);
+
+        return 0;
+	}
+	public short getIndexBlockNumber(){
+		
+	}
+	public boolean setIndexBlock(short indexBlockNumber){
+		
+	}
+	public short findTargetBlock(int offset){
+		
 	}
 }

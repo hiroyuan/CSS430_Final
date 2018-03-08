@@ -84,4 +84,26 @@ class SuperBlock{
 
 		sync();
 	}
+
+  //HN <3 HY <3 TL
+  public boolean returnBlock(int blockID)
+  {
+      if(blockID > 0 && blockID < totalBlocks)
+      {
+          byte[] freeBlock = new byte[512];
+          for(int i = 0; i < 512; i++)
+          {
+              freeBlock[i] = 0; // initialize into null value
+          }
+          SysLib.rawwrite(blockID, freeBlock); // write this empty block with blockID to the Disk
+          
+          SysLib.int2bytes(freeList, freeBlock, 0); // make new freeBlock point to the previous SuperBlock's freeList head
+          freeList = blockID; //ensuring that freeList points to the newly added free block
+          sync();
+            
+          return true;
+        }
+        else
+          return false;
+    }
 }
