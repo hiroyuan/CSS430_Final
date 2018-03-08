@@ -59,7 +59,14 @@ public class FileSystem
 		
 	public int read(FileTableEntry ftEnt, byte[] buffer)
 	{
-		
+		if()
+        {
+            
+        }
+        else
+        {
+            return ERROR;
+        }
 	}
 		
 	public int write(FileTableEntry ftEnt, byte[] buffer)

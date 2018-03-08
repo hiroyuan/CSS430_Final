@@ -135,10 +135,13 @@ public class Kernel
                   // wake up the thread waiting for a request acceptance
                   ioQueue.dequeueAndWakeup( COND_DISK_REQ );
                   return OK;
+                    
+               //************************PROJECT************************
                case READ:
                   switch ( param ) {
+                          
                      case STDIN:
-                        try {
+                        try{
                            String s = input.readLine(); // read a keyboard input
                            if ( s == null ) {
                               return ERROR;
@@ -160,8 +163,18 @@ public class Kernel
                         System.out.println( "threaOS: caused read errors" );
                         return ERROR;
                   }
-                  // return FileSystem.read( param, byte args[] );
+                    
+                  myTcb = scheduler.getMyTcb();
+                  if(myTcb != null)
+                  {
+                      FileTableEntry ftEnt = myTcb.getFtEnt(param);
+                      if(ftEnt != null)
+                      {
+                          return fs.read( ftEnt, byte args[] );
+                      }
+                  }
                   return ERROR;
+                
                case WRITE:
                   switch ( param ) {
                      case STDIN:
@@ -174,7 +187,18 @@ public class Kernel
                         System.err.print( (String)args );
                         break;
                   }
-                  return OK;
+                  myTcb = scheduler.getMyTcb();
+                  if(myTcb != null)
+                  {
+                        FileTableEntry ftEnt = myTcb.getFtEnt(param);
+                        if(ftEnt != null)
+                        {
+                            return fs.write( ftEnt, byte args[] );
+                        }
+                  }
+                  return ERROR;
+                  //*******************************************************
+                    
                case CREAD:   // to be implemented in assignment 4
                   return cache.read( param, ( byte[] )args ) ? OK : ERROR;
                case CWRITE:  // to be implemented in assignment 4

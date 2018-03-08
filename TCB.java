@@ -45,6 +45,8 @@ public class TCB {
     }
 
     // added for the file system
+    // returns the next empty file descriptor
+    // returns -1 if all file descriptor is occupied
     public synchronized int getFd( FileTableEntry entry ) {
 	if ( entry == null )
 	    return -1;
