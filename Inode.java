@@ -22,7 +22,7 @@ public class Inode{
         flag = 1;
         
         for(int i=0;i<directSize;i++)
-            direct[i] = -1;                    //Point to nothing
+            direct[i] = -1;
         
         indirect = -1;
     }
@@ -103,14 +103,22 @@ public class Inode{
         
         return 0;
     }
+    
     public short getIndexBlockNumber(){
-        
+        return indirect;
     }
-    public boolean setIndexBlock(short indexBlockNumber){
-        
+    public boolean setIndexBlock(short indexBlockNumber)
+    {
+        if(indexBlockNumber >= -1
+        indirect = indexBlockNumber;
     }
     public short findTargetBlock(int seekPointer){
         //check if seekPointer still points to byte within direct block
+        if(indirect < 0)
+        {
+            return -1;
+        }
+        
         int blockIndex = seekPointer/MAX_BYTES; //1 block = 512 bytes
         if(seekBlock < directSize) // seekPointer still points to a byte within one of the direct block
         {

@@ -48,12 +48,27 @@ public class FileSystem
 		
 	public boolean close(FileTableEntry ftEnt) 
 	{
-		
+		synchronized(ftEnt)
+        {
+            ftEnt.count--;
+            
+            if(count > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return filetable.ffree(ftEnt);
+            }
+        }
 	}
 		
 	public int fsize(FileTableEntry ftEnt)
 	{
-		
+        synchronized(ftEnt)
+        {
+            return ftEnt.inode.length;
+        }
 	}
 		
 		
@@ -71,7 +86,10 @@ public class FileSystem
 		
 	public int write(FileTableEntry ftEnt, byte[] buffer)
 	{
-		
+		synchronized(ftEnt)
+        {
+            
+        }
 	}	
 		
 	public boolean delete(String filename)
