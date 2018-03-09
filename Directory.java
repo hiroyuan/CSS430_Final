@@ -30,7 +30,7 @@ public class Directory {
       //Initialize the fnames array with the name of the file
 	  for(int i=0;i<fsize.length;i++){
 		  String temp = new String(data,offset,maxChars*2);
-		  temp.getChars(0,fsize[i],fnames[i],0)
+		  temp.getChars(0,fsize[i],fnames[i],0);
 		  offset+=maxChars*2;
 	  }
    }
@@ -58,23 +58,25 @@ public class Directory {
    }
 
    public short ialloc( String filename ) {
-      // filename is the one of a file to be created.
-      // allocates a new inode number for this filename
-	  for(short i=0;i<fsize.length())
-	  {
-		  if(fsize[i] == 0){
-			  int file;
-			  if(filename.length>maxChars)
-				  file = maxChars;
-			  else
-				  file = filename.length;
-			  fsize[i] = file;
-			  fnames.getChars(0,fsize[i],fnames[i],0);
-			  return i;
-		  }
-		  return ERROR;
-	  }
-   }
+    // filename is the one of a file to be created.
+    // allocates a new inode number for this filename
+    for(short i=0;i< fsize.length; i++)
+    {
+        if(fsize[i] == 0){
+            int file;
+            if(filename.length() > maxChars)
+                file = maxChars;
+            else
+                file = filename.length();
+            fsize[i] = file;
+        
+            fnames.getChars(0,fsize[i],fnames[i],0); //still a mystery
+            return i;
+        }
+        //return ERROR - JM should not be here
+  }
+  return ERROR; 
+ }
 
    public boolean ifree( short iNumber ) {
       // deallocates this inumber (inode number)
