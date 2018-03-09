@@ -31,9 +31,21 @@ public class FileSystem
 	{
 		
 	}
-	public boolean format(int files) 
+	public boolean format(int files)
 	{
-		
+        if(files > 0) //&& filetable.fempty()) ???????????????????????
+        {
+            // have superblock formatted
+            superblock.format(files);
+        
+            // have a new directory
+            directory = new Directory(superblock.totalInodes);
+        
+            // have a new filetable
+            filetable = new FileTable(directory);
+            return true;
+        }
+        return false;
 	}
 		
 	public FileTableEntry open(String filename, String mode)
@@ -46,12 +58,12 @@ public class FileSystem
 		return retVal;
 	}	
 		
+    //done
 	public boolean close(FileTableEntry ftEnt) 
 	{
 		synchronized(ftEnt)
         {
             ftEnt.count--;
-            
             if(count > 0)
             {
                 return true;
@@ -62,7 +74,8 @@ public class FileSystem
             }
         }
 	}
-		
+    
+    //done
 	public int fsize(FileTableEntry ftEnt)
 	{
         synchronized(ftEnt)
@@ -71,7 +84,7 @@ public class FileSystem
         }
 	}
 		
-		
+    
 	public int read(FileTableEntry ftEnt, byte[] buffer)
 	{
 		if()
@@ -91,12 +104,14 @@ public class FileSystem
             
         }
 	}	
-		
+    
+    
 	public boolean delete(String filename)
 	{
 		
 	}
-		
+    
+    
 	public int seek(FileTableEntry ftEnt, int offset, int whence)
 	{
 		synchronized(ftEnt)
@@ -120,7 +135,8 @@ public class FileSystem
 		}
 		return ftEnt.seekPtr;
 	}
-
+    
+    
 	private boolean deallocAllBlocks(FileTableEntry ftEnt)
 	{
 		

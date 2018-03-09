@@ -103,10 +103,11 @@ public class Inode{
         
     }
     
-    public short getIndexBlockNumber(){
+    public short getIndexBlockNumber()
+    {
         return indirect;
     }
-	
+
     public boolean setIndexBlock(short indexBlockNumber)
     {
         // check if any direct is not used
@@ -137,6 +138,7 @@ public class Inode{
         // indirect already been set b4
       	return false;
     }
+           
     public short findTargetBlock(int seekPointer){
         //check if seekPointer still points to byte within direct block
         if(indirect < 0)
