@@ -73,7 +73,6 @@ public class Directory {
             fnames.getChars(0,fsize[i],fnames[i],0); //still a mystery
             return i;
         }
-        //return ERROR - JM should not be here
   }
   return ERROR; 
  }

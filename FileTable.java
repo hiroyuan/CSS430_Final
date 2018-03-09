@@ -15,11 +15,16 @@ public class FileTable {
    // major public methods
    public synchronized FileTableEntry falloc( String filename, String mode ) {
       // allocate a new file (structure) table entry for this file name
-<<<<<<< HEAD
 	  FileTableEntry fte = null;
 	  Inode inode = null;
-	  // allocate/retrieve and register the corresponding inode using dir
-	  while(true){
+	
+	  //get iNumber for filename
+	  //create Inode(iNumber)
+	  //check the mode
+	  //if read
+
+	  //this while loop is use if it goes to wait() code
+	  while(true){ 
 		  int inumber = namei(filename);		//Finding the Inode with the fileName first
 		  if(inumber>=0)	//If the Inode exist
 		  {
@@ -52,7 +57,7 @@ public class FileTable {
 				  }
 			  }
 		  }
-		  else if(mode.equals("r")){		//If the Inode does not exist then allocate and create a new Inode for the fileName
+		  else if(mode.equals("w")){		//If the Inode does not exist then allocate and create a new Inode for the fileName
 			  iNumber = dir.ialloc(fileName);
 			  inode = new Inode(inumber);
 			  inode.flag = WRITE;
@@ -70,12 +75,12 @@ public class FileTable {
 	  fte = new FileTableEntry(inode,inumber,mode);
 	  table.addElement(fte);
 	  return fte;
-=======
       // allocate/retrieve and register the corresponding inode using dir
       // increment this inode's count
       // immediately write back this inode to the disk??????????????????????????????
       // return a reference to this file (structure) table entry
-	if(mode.equals("w") || mode.equals("w+") || mode.equals("a")
+	/*
+	  if(mode.equals("w") || mode.equals("w+") || mode.equals("a")
 	{
 		FileTableEntry fte = null;
 		Inode inode = null;
@@ -101,8 +106,7 @@ public class FileTable {
 		}
 
 	}
-	
->>>>>>> origin/master
+*/	
    }
 
    public synchronized boolean ffree( FileTableEntry entry ) {

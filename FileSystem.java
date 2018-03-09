@@ -31,9 +31,18 @@ public class FileSystem
 	{
 		
 	}
-	public boolean format(int files) 
+
+	// 
+	public boolean format(int files)
 	{
-		
+		superblock.format(files);
+
+		directory = new Directory(superblock.totalInodes);
+
+		filetable = new FileTable(directory);
+
+		return true;
+
 	}
 		
 	public FileTableEntry open(String filename, String mode)
@@ -74,14 +83,38 @@ public class FileSystem
 		
 	public int read(FileTableEntry ftEnt, byte[] buffer)
 	{
-		if()
-        {
-            
-        }
-        else
-        {
-            return ERROR;
-        }
+		int buf_length = buffer.length;
+		int block_size = 512;
+
+		if (ftEnt.mode == "a" || ftEnt.mode == "w")
+			return -1;
+		
+		synchronized(ftEnt) {
+			// 
+			while (entry.seekPtr < fsize(ftEnt) && (buf_length > 0))
+				{
+					SysLib.rawread
+			// find the iNode to be read
+
+			//if buffer size < data to be read, then keep reading until buffer is full. 
+			//pointing ptr to end of read
+
+			// else
+				//
+
+				
+			if()
+				{
+					
+				}
+				else
+				{
+					return ERROR;
+				}
+
+		}
+
+		
 	}
 		
 	public int write(FileTableEntry ftEnt, byte[] buffer)
