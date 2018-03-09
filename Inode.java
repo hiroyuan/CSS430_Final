@@ -104,14 +104,17 @@ public class Inode{
         return 0;
     }
     
-    public short getIndexBlockNumber(){
+    public short getIndexBlockNumber()
+    {
         return indirect;
     }
+    
     public boolean setIndexBlock(short indexBlockNumber)
     {
         if(indexBlockNumber >= -1
         indirect = indexBlockNumber;
     }
+           
     public short findTargetBlock(int seekPointer){
         //check if seekPointer still points to byte within direct block
         if(indirect < 0)

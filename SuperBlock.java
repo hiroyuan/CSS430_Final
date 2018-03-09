@@ -13,6 +13,7 @@ class SuperBlock{
 		totalInodes = SysLib.bytes2int(superBlock, 4);
 		freeList = SysLib.bytes2int(superBlock, 8);
 
+        //1 superblock and minimum of 1 totalInodes, freeList head at block number 2 is valid
 		if (totalBlocks == diskSize && totalInodes > 0 && freeList >= 2)
 			// disk contents are valid
 			return;
@@ -31,17 +32,22 @@ class SuperBlock{
 		SysLib.rawwrite(0, block); // write
 	}
 
+    //returns the block number of the next free block
 	public int getFreeBlock() {
 		if (freeList > 0 && freeList < totalBlocks) {
 			byte[] block = new byte[Disk.blockSize];
 			SysLib.rawread(0, block);
 			int retVal = freeList; // return current free block
-			freeList = SysLib.bytes2int(block, 0); // find next free block
+			freeList = SysLib.bytes2int(block, 0); // find next free block, make SuperBlock point to the next free block.
+            //PERFORM SYNC() TO UPDATE DISK INFOMRATION ABOUT SUPERBLOCK?????????????
 			return retVal;
 		}
 		return -1;
 	}
-
+    
+    //re-formatting the Disk with numberOfInode number of iNodes.
+    //reset all blocks to default.
+    //MODIFY??????????????????
 	public void format(int numberOfInode) {
 		if (numberOfInode < 0)
 			numberOfInode = DEFAULT_INODE_BLOCK;
@@ -50,7 +56,7 @@ class SuperBlock{
 		totalInodes = numberOfInode;
 		for (int i = 0; i < totalInodes; i++) {
 			Inode iNode = new Inode();
-			iNode.toDisk((short) i);
+			iNode.toDisk((short) i); // allocate every single inode to disk
 		}
 
 		freeList = totalInodes / 16 + 1;
@@ -64,13 +70,13 @@ class SuperBlock{
 			if (i <= BLOCKS - 2) {
 				// format block here
 				for (int index = 0; j < Disk.blockSize; index++)
-					block[index] = 0;
+					block[index] = 0; //nullify value within this free block
 
 				SysLib.int2bytes(i + 1, block, 0); //assign next free block into the block
 			}
 			else if (i == BLOCKS - 1) {
 				for (int index = 0; index < Disk.blockSize; index++)
-					block[index] = 0
+					block[index] = 0 //nullify value within this free block
 				
 				SysLib.int2bytes(-1, lastBlock, 0); //last block should point -1 for freeList
 													//since there is no more free block
