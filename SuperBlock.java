@@ -5,6 +5,7 @@ class SuperBlock{
 	public int totalInodes;			//The number of Inodes
 	public int freeList;			//The block number of the free list's head
 
+    //CHECKED
 	public SuperBlock(int diskSize) {
 		// read super block from disk
 		byte[] superBlock = new byte[Disk.blockSize];
@@ -24,6 +25,7 @@ class SuperBlock{
 		}
 	}
 
+    //CHECKED
 	public void sync() {
 		byte[] block = new byte[Disk.blockSize];
 		SysLib.int2bytes(totalBlocks, block, 0); // turn blocks into bytes
@@ -32,41 +34,40 @@ class SuperBlock{
 		SysLib.rawwrite(0, block); // write
 	}
 
-    //returns the block number of the next free block
+    //CHECKED
 	public int getFreeBlock() {
 		if (freeList > 0 && freeList < totalBlocks) {
 			byte[] block = new byte[Disk.blockSize];
-			SysLib.rawread(0, block);
+			SysLib.rawread(freeList, block);
 			int retVal = freeList; // return current free block
 			freeList = SysLib.bytes2int(block, 0); // find next free block, make SuperBlock point to the next free block.
-            //PERFORM SYNC() TO UPDATE DISK INFOMRATION ABOUT SUPERBLOCK?????????????
 			return retVal;
 		}
 		return -1;
 	}
     
-    //re-formatting the Disk with numberOfInode number of iNodes.
-    //reset all blocks to default.
-    //MODIFY??????????????????
+    //CHECKED
 	public void format(int numberOfInode) {
-		if (numberOfInode < 0)
+		if (numberOfInode <= 0)
 			numberOfInode = DEFAULT_INODE_BLOCK;
 
 		// initialize iNodes
 		totalInodes = numberOfInode;
+        
 		for (int i = 0; i < totalInodes; i++) {
 			Inode iNode = new Inode();
+            temp.flag = 0;
 			iNode.toDisk((short) i); // allocate every single inode to disk
 		}
 
+        //+2 or +1 ???????????
 		freeList = totalInodes / 16 + 1;
 
 		// initialize the every free blocks except last block
 		// free blocks should contain next free block number
 		// last free block should contain -1 for freeList
-		byte[] block;
 		for (int i = freeList; i < BLOCKS; i++) {
-			block = new byte[Disk.blockSize];
+			byte[] block = new byte[Disk.blockSize];
 			if (i <= BLOCKS - 2) {
 				// format block here
 				for (int index = 0; j < Disk.blockSize; index++)
@@ -87,22 +88,15 @@ class SuperBlock{
 		sync();
 	}
 
-  	//HN <3 HY <3 TL
+  	//CHECKED
   	public boolean returnBlock(int blockID)
   	{
       	if(blockID > 0 && blockID < totalBlocks)
       	{
-          	byte[] freeBlock = new byte[512];
-          	for(int i = 0; i < 512; i++)
-          	{
-              	freeBlock[i] = 0; // initialize into null value
-          	}
-          	SysLib.rawwrite(blockID, freeBlock); // write this empty block with blockID to the Disk
-          	
+          	byte[] freeBlock = new byte[Disk.blockSize];
           	SysLib.int2bytes(freeList, freeBlock, 0); // make new freeBlock point to the previous SuperBlock's freeList head
-          	freeList = blockID; //ensuring that freeList points to the newly added free block
-          	sync();
-            
+            SysLib.rawwrite(blockID, freeBlock); // write this empty block with blockID to the Disk
+          	freeList = blockID; //ensuring that Superblock stores freeList that points to the newly added free block
           	return true;
         }
         else
