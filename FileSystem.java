@@ -114,7 +114,26 @@ public class FileSystem
     
 	public int seek(FileTableEntry ftEnt, int offset, int whence)
 	{
-        
+		synchronized(ftEnt)
+		{
+			switch(whence)
+			{
+				case SEEK_SET:		
+					ftEnt.seekPtr = offset;		//Put the seekPointer of the file to offset
+					break;
+				case SEEK_CUR:
+					ftEnt.seekPtr += offset;	//Add the seekPointer of the file to offset
+					break;
+				case SEEK_END:		//Add the seekPointer of the file equal the length of the inode to the offset
+					ftEnt.seekPtr = ftEnt.inode.length + offset;
+					break;
+			}
+			if(ftEnt.seekPtr < 0)
+				ftEnt.seekPtr = 0;
+			if(ftEnt.seekPtr > ftEnt.inode.length)
+				ftEnt.seekPtr = ftEnt.inode.length
+		}
+		return ftEnt.seekPtr;
 	}
     
     

@@ -57,17 +57,17 @@ public class Inode{
         }
         
         indirect = SysLib.bytes2short(data, inodeOffset);
-        inodeOffset += shortBlock; // inodeOffset to point to starting byte of next data of the inode
+        //inodeOffset += shortBlock; // inodeOffset to point to starting byte of next data of the inode
     }
     
-    public int toDisk(short iNumber) {    //Save the i-th inode to the disk
+    public void toDisk(short iNumber) {    //Save the i-th inode to the disk
         byte [] data = new byte[iNodeSize];
         
         int offset = 0;
         
         //assigning length value to new byte[]
         SysLib.int2bytes(length, data, offset);
-        offset += intBlock;
+        //offset += intBlock;
         
         //assigning count value to new byte[]
         SysLib.short2bytes(count, data, offset);
@@ -101,18 +101,42 @@ public class Inode{
         System.arraycopy(data, 0, newData, inodeOffset, iNodeSize);
         SysLib.rawwrite(blockID,newData); // write back the entire inode block, containing modified info for inode #iNumber back into the Disk
         
-        return 0;
     }
     
     public short getIndexBlockNumber()
     {
         return indirect;
     }
-    
+
     public boolean setIndexBlock(short indexBlockNumber)
     {
-        if(indexBlockNumber >= -1
-        indirect = indexBlockNumber;
+        // check if any direct is not used
+	    for (int i = 0; i < directSize; i ++)
+      	{
+         	if ( direct[i] == -1) return false;
+      	}
+
+      	byte[] data = new byte[Disk.blockSize];
+
+      	// when indirect is available
+      	if (indirect == -1)
+      	{
+      		// set the Index block number
+			indirect = indexBlockNumber;
+			int totalIndirectPointers = 512/2;
+			int offset = 0;
+			for (int i = 0; i < totalIndirectPointers; i++)
+			{
+				short value = -1; 
+				SysLib.short2bytes(value, data, offset);
+				offset +=shortBlock;
+			}
+			// write 
+			SysLib.rawwrite(indexBlockNumber, data);
+			return true;
+        }
+        // indirect already been set b4
+      	return false;
     }
            
     public short findTargetBlock(int seekPointer){
