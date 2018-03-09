@@ -9,13 +9,13 @@ public class Directory {
    private char fnames[][];    // each element stores a different file name.
 
    public Directory( int maxInumber ) { // directory constructor
-      fsizes = new int[maxInumber];     // maxInumber = max files
+      fsize = new int[maxInumber];     // maxInumber = max files
       for ( int i = 0; i < maxInumber; i++ ) 
          fsize[i] = 0;                 // all file size initialized to 0
       fnames = new char[maxInumber][maxChars];
       String root = "/";                // entry(inode) 0 is "/"
       fsize[0] = root.length( );        // fsize[0] is the size of "/".
-      root.getChars( 0, fsizes[0], fnames[0], 0 ); // fnames[0] includes "/"
+      root.getChars( 0, fsize[0], fnames[0], 0 ); // fnames[0] includes "/"
    }
 
    public void bytes2directory( byte data[] ) {
@@ -40,7 +40,7 @@ public class Directory {
       // this byte array will be written back to disk
       // note: only meaningfull directory information should be converted
       // into bytes.
-		byte [] dir = new byte[ALLOC_BYTE * fsize.length];
+		byte [] dir = new byte[fsizes.length * 4 + maxChars * fsizes.length * 2];
         int offset = 0;
         for (int i = 0; i < fsize.length; i++)
         {
@@ -60,6 +60,7 @@ public class Directory {
    public short ialloc( String filename ) {
       // filename is the one of a file to be created.
       // allocates a new inode number for this filename
+	  short result = ERROR;		//Initialize result with an error first
 	  for(short i=0;i<fsize.length())
 	  {
 		  if(fsize[i] == 0){
@@ -72,15 +73,19 @@ public class Directory {
 			  fnames.getChars(0,fsize[i],fnames[i],0);
 			  return i;
 		  }
-		  return ERROR;
 	  }
+	  return result;
    }
 
    public boolean ifree( short iNumber ) {
       // deallocates this inumber (inode number)
       // the corresponding file will be deleted.
-	  if(iNumber < fsize.length && iNumber>0)
+	  if(iNumber < fsize.length && iNumber>0 &&fsize[iNumber]>0)
 	  {
+		  for(int i=0;i<fsize[iNumber];i++)
+		  {
+			  fnames[inumber][i] = 0;
+		  }
 		  fsize[iNumber] = 0;
 		  return true;
 	  }
