@@ -19,7 +19,7 @@ public class Inode{
     public Inode(){
         length = 0;
         count = 0;
-        flag = 1;
+        flag = 0;
         
         for(int i=0;i<directSize;i++)
             direct[i] = -1;
@@ -67,11 +67,10 @@ public class Inode{
         
         //assigning length value to new byte[]
         SysLib.int2bytes(length, data, offset);
-        //offset += intBlock;
         
         //assigning count value to new byte[]
         SysLib.short2bytes(count, data, offset);
-        offset +=shortOffset;
+        offset +=intOffset;
         
         //assigning flag value to new byte[]
         SysLib.short2bytes(flag, data, offset);
@@ -102,11 +101,11 @@ public class Inode{
         SysLib.rawwrite(blockID,newData); // write back the entire inode block, containing modified info for inode #iNumber back into the Disk
         
     }
-    
+    /*
     public short getIndexBlockNumber()
     {
         return indirect;
-    }
+    }*/
 
     public boolean setIndexBlock(short indexBlockNumber)
     {
