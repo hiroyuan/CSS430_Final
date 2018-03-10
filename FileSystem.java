@@ -29,7 +29,11 @@ public class FileSystem
 	
 	public void sync()
 	{
-		
+		byte[] block = directory.directory2bytes();
+		FileTableEntry root = open("/", "w"); //because sync() function in super block should perform write, we open with write permission
+		write(root, directory.directory2bytes());
+		close(root);
+		superblock.sync();
 	}
 	public boolean format(int files)
 	{
@@ -108,7 +112,13 @@ public class FileSystem
     
 	public boolean delete(String filename)
 	{
-		
+		FileTableEntry entryToDelete = open(filename, "w");
+		if (directory.ifree(entryToDelete.iNumber))
+			return true;
+		else {
+			System.err.println("Deletion unsuccessful");
+			return false;
+		}
 	}
     
     
