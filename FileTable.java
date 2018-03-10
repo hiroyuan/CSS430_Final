@@ -44,7 +44,7 @@ public class FileTable {
 		Inode inode = null;
 		// allocate/retrieve and register the corresponding inode using dir
 		while(true){
-		  inumber = namei(filename);		//Finding the Inode with the fileName first
+		  inumber = dir.namei(filename);		//Finding the Inode with the fileName first
 		  if(inumber>=0)	//If the Inode exist
 		  {		
 			  inode = maintainInode.elementAt(Integer.valueOf(iNumber));
@@ -52,9 +52,9 @@ public class FileTable {
 		  }
 		  else
 		  {
-				/*if(mode.equals("r")){		//If the Inode does not exist then allocate and create a new Inode for the fileName
+				if(mode.equals("r")){		//If the Inode does not exist then allocate and create a new Inode for the fileName
 					return null;
-				}*/
+				}
 				
 				if((iNumber = dir.ialloc(filename))>=0)	//If the exist an inode free to allocate
 				{
