@@ -52,11 +52,11 @@ public class FileTable {
 		  }
 		  else
 		  {
-				if(mode.equals("r")){		//If the Inode does not exist then allocate and create a new Inode for the fileName
-					return null;
+				if(mode.equals("r")){
+					return null; //does not allow mode "r" to a file that does not exist
 				}
-				
-				if((iNumber = dir.ialloc(filename))>=0)	//If the exist an inode free to allocate
+              //for any other mode: "w" or "w+" or "a"
+				if((iNumber = dir.ialloc(filename))>=0)	//If any Inode is still available to be used
 				{
 					inode = new Inode();
 					maintainInode.set(Integer.valueOf(iNumber),inode);	//Set the new Inode into maintainInode vector
@@ -69,10 +69,10 @@ public class FileTable {
 		  }
 		}
 
-		//When we read set flag to 1
+        //only accessed when file exists AND mode is "r"
 		if(mode.equals("r"))
 		{
-			if(inode.flag == USED || inode. == UNUSED)
+			if(inode.flag == USED || inode.flag == UNUSED)
 				inode.flag = READ;
 			else
 			{

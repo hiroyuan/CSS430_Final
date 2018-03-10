@@ -140,29 +140,27 @@ public class Inode{
     }
            
     public short findTargetBlock(int seekPointer){
-        //check if seekPointer still points to byte within direct block
-        if(indirect < 0)
-        {
-            return -1;
-        }
-        
         int blockIndex = seekPointer/MAX_BYTES; //1 block = 512 bytes
-        if(seekBlock < directSize) // seekPointer still points to a byte within one of the direct block
+        if(blockIndex < directSize) // seekPointer still points to a byte within one of the direct block
         {
             return direct[blockIndex];
         }
         else // seekPointer points to a byte within one block of data pointed by indirect pointer
         {
-            //reading in an indirect block from Disk, each 2 bytes of indirect block represents data block
-            //, similar to direct block with each 2 byte for data
-            byte[] indirectBlock = new byte[MAX_BYTES];
-            SysLib.rawread(indirect, indirectBlock);
+            if(indirect >= 0)
+            {
+                //reading in an indirect block from Disk, each 2 bytes of indirect block represents data block
+                //, similar to direct block with each 2 byte for data
+                byte[] indirectBlock = new byte[MAX_BYTES];
+                SysLib.rawread(indirect, indirectBlock);
             
-            int pointerNumber = blockIndex - 11; // represent an index out of the 256 pointers
-            int blockOffset = pointerNumber * 2; // 1 pointer = 2 bytes -> offset of 2 byte indices within byte[512]
+                int pointerNumber = blockIndex - 11; // represent an index out of the 256 pointers
+                int blockOffset = pointerNumber * 2; // 1 pointer = 2 bytes -> offset of 2 byte indices within byte[512]
             
-            //get short value starting from blockOffset from indirectBlock
-            return SysLib.bytes2short(indirectBlock, blockOffset);
+                //get short value starting from blockOffset from indirectBlock
+                return SysLib.bytes2short(indirectBlock, blockOffset);
+            }
+            return -1; // blockIndex >= directSize && indirect < 0 -> when file size == direct block size
         }
         
     }
