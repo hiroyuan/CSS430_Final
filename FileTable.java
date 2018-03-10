@@ -4,9 +4,8 @@ public class FileTable {
 	private Vector<FileTableEntry> table;         // the actual entity of this file table
 	private Directory dir;        // the root directory 
 	private final int UNUSED =0;
-	private final int USED =1;
-	private final int READ =2;
-	private final int WRITE =3;
+	private final int READ =1;
+	private final int WRITE =2;
 	private final int TOTAL_INODES = 64;		//We have 64 inode in total
 	private Vector<Inode> maintainInode;		//The Inode vector to maintain Indode each thread can access
 
@@ -73,25 +72,23 @@ public class FileTable {
         //only accessed when file exists AND mode is "r"
 		if(mode.equals("r"))
 		{
-			if(inode.flag == USED || inode.flag == UNUSED)
-				inode.flag = READ;
-			else
+			if(inode.flag == WRITE)
 			{
 				try{
 					wait();
 				}catch (InterruptedException e){}
 			}
+			inode.flag = READ;
 		}
 		else	//Other cases: writing, appending, set flag to 3
 		{
-			if(inode.flag == USED || inode.flag == UNUSED)
-				inode.flag = WRITE;
-			else
+			if(inode.flag != UNUSED)
 			{
 				try{
 					wait();
 				}catch (InterruptedException e){}
 			}
+			inode.flag = WRITE;
 		}
 		// increment this inode's count
 		inode.count++;
@@ -111,26 +108,21 @@ public class FileTable {
 	  // free this file table entry.
 	   if (table.remove(entry))		// return true if this file table entry found in my table
 		{
-			if (inode.flag == READ)
+			// update count
+			entry.inode.count--;
+
+			// reset flag to not used
+			if(entry.inode.count == 0)
 			{
-				if (inode.count == 1)
-				{
-					// free this file table entry.
-					notify();
-					inode.flag = USED;
-				}
+				entry.inode.flag =0;
 			}
-			else if (inode.flag == WRITE)
-			{
-				inode.flag = USED;
-				notifyAll();		//notify to all thread that this inode is free to read or write
-			}
-			//decrease the count of users of that file
-			inode.count--;
-			// save the corresponding inode to the disk
-			inode.toDisk(entry.iNumber);
-			entry = null;		//Free this file table entry now
-			return true;	
+
+			entry.inode.toDisk(entry.iNumber);
+			entry = null;
+
+			// notify the other waitings that inode been updated
+			notify();
+			return true;
 		}
 		return false;	//Return false if the file table entry is not found in my table
 	}
