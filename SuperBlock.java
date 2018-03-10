@@ -56,7 +56,7 @@ class SuperBlock{
         
 		for (int i = 0; i < totalInodes; i++) {
 			Inode iNode = new Inode();
-            temp.flag = 0;
+            iNode.flag = 0;
 			iNode.toDisk((short) i); // allocate every single inode to disk
 		}
 
@@ -70,16 +70,16 @@ class SuperBlock{
 			byte[] block = new byte[Disk.blockSize];
 			if (i <= BLOCKS - 2) {
 				// format block here
-				for (int index = 0; j < Disk.blockSize; index++)
+				for (int index = 0; index < Disk.blockSize; index++)
 					block[index] = 0; //nullify value within this free block
 
 				SysLib.int2bytes(i + 1, block, 0); //assign next free block into the block
 			}
 			else if (i == BLOCKS - 1) {
 				for (int index = 0; index < Disk.blockSize; index++)
-					block[index] = 0 //nullify value within this free block
+					block[index] = 0; //nullify value within this free block
 				
-				SysLib.int2bytes(-1, lastBlock, 0); //last block should point -1 for freeList
+				SysLib.int2bytes(-1, block, 0); //last block should point -1 for freeList
 													//since there is no more free block
 			}
 			SysLib.rawwrite(i, block);
