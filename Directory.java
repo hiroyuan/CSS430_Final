@@ -30,7 +30,7 @@ public class Directory {
       //Initialize the fnames array with the name of the file
 	  for(int i=0;i<fsize.length;i++){
 		  String temp = new String(data,offset,maxChars*2);
-		  temp.getChars(0,fsize[i],fnames[i],0)
+		  temp.getChars(0,fsize[i],fnames[i],0);
 		  offset+=maxChars*2;
 	  }
    }
@@ -40,7 +40,7 @@ public class Directory {
       // this byte array will be written back to disk
       // note: only meaningfull directory information should be converted
       // into bytes.
-		byte [] dir = new byte[fsizes.length * 4 + maxChars * fsizes.length * 2];
+		byte [] dir = new byte[fsize.length * 4 + maxChars * fsize.length * 2];
         int offset = 0;
         for (int i = 0; i < fsize.length; i++)
         {
@@ -61,16 +61,16 @@ public class Directory {
       // filename is the one of a file to be created.
       // allocates a new inode number for this filename
 	  short result = ERROR;		//Initialize result with an error first
-	  for(short i=0;i<fsize.length())
+	  for(short i=0;i<fsize.length;i++)
 	  {
 		  if(fsize[i] == 0){
 			  int file;
-			  if(filename.length>maxChars)
+			  if(filename.length()>maxChars)
 				  file = maxChars;
 			  else
-				  file = filename.length;
+				  file = filename.length();
 			  fsize[i] = file;
-			  fnames.getChars(0,fsize[i],fnames[i],0);
+			  System.arraycopy (filename.toCharArray(), 0, fnames[i], 0, file);
 			  return i;
 		  }
 	  }
@@ -84,7 +84,7 @@ public class Directory {
 	  {
 		  for(int i=0;i<fsize[iNumber];i++)
 		  {
-			  fnames[inumber][i] = 0;
+			  fnames[iNumber][i] = 0;
 		  }
 		  fsize[iNumber] = 0;
 		  return true;
@@ -96,7 +96,7 @@ public class Directory {
    public short namei( String filename ) {
       // returns the inumber corresponding to this filename
 	  for(short i = 0;i<fsize.length;i++){
-		  if(fsize[i] == filename.length)
+		  if(fsize[i] == filename.length())
 		  {
 			  String temp = new String(fnames[i],0,fsize[i]);
 			  if(filename.equals(temp))
