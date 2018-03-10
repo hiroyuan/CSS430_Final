@@ -71,22 +71,22 @@ public class Inode{
         
         //assigning count value to new byte[]
         SysLib.short2bytes(count, data, offset);
-        offset += shortBlock;
+        offset +=shortOffset;
         
         //assigning flag value to new byte[]
         SysLib.short2bytes(flag, data, offset);
-        offset += shortBlock;
+        offset += shortOffset;
         
         //assigning direct block pointer values to new byte[]
         for (int i = 0; i < directSize; i++)
         {
             SysLib.short2bytes(direct[i], data, offset);
-            offset += shortBlock;
+            offset += shortOffset;
         }
         
         //assigning indirect block pointer values to new byte[]
         SysLib.short2bytes(indirect, data, offset);
-        offset += shortBlock;
+        offset += shortOffset;
         
         int blockID = 1 + iNumber / MAX_INODES;
         
@@ -129,7 +129,7 @@ public class Inode{
 			{
 				short value = -1; 
 				SysLib.short2bytes(value, data, offset);
-				offset +=shortBlock;
+				offset +=shortOffset;
 			}
 			// write 
 			SysLib.rawwrite(indexBlockNumber, data);

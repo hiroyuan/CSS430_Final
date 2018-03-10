@@ -1,3 +1,4 @@
+import java.util.*;
 public class FileTable {
 
 	private Vector<FileTableEntry> table;         // the actual entity of this file table
@@ -44,8 +45,8 @@ public class FileTable {
 		Inode inode = null;
 		// allocate/retrieve and register the corresponding inode using dir
 		while(true){
-		  inumber = dir.namei(filename);		//Finding the Inode with the fileName first
-		  if(inumber>=0)	//If the Inode exist
+		  iNumber = dir.namei(filename);		//Finding the Inode with the fileName first
+		  if(iNumber>=0)	//If the Inode exist
 		  {		
 			  inode = maintainInode.elementAt(Integer.valueOf(iNumber));
 			  break;
@@ -78,26 +79,26 @@ public class FileTable {
 			{
 				try{
 					wait();
-				}catch (InterruptedException e)
+				}catch (InterruptedException e){}
 			}
 		}
 		else	//Other cases: writing, appending, set flag to 3
 		{
-			if(inode.flag == USED || inode. == UNUSED)
+			if(inode.flag == USED || inode.flag == UNUSED)
 				inode.flag = WRITE;
 			else
 			{
 				try{
 					wait();
-				}catch (InterruptedException e)
+				}catch (InterruptedException e){}
 			}
 		}
 		// increment this inode's count
 		inode.count++;
 		// immediately write back this inode to the disk
-		inode.toDisk(inumber);
+		inode.toDisk(iNumber);
 		// return a reference to this file (structure) table entry
-		fte = new FileTableEntry(inode,inumber,mode);
+		fte = new FileTableEntry(inode,iNumber,mode);
 		table.addElement(fte);
 		return fte;
 
