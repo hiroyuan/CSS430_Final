@@ -70,6 +70,7 @@ public class FileSystem
 		close(root);
 		superblock.sync();
 	}
+	
 	public int format(int files)
 	{
 		boolean toFormat = true;
@@ -94,9 +95,16 @@ public class FileSystem
 			return false;
 
 		byte[] block = new byte[Disk.blockSize];
-		SysLib.rawread(ftEnt.inode.indirect, block);
-		ftEnt.inode.indirect = -1;
-
+		if(ftEnt.inode.indirect == -1)
+		{
+			block = null;
+		}
+		else
+		{
+			SysLib.rawread(ftEnt.inode.indirect, block);
+			ftEnt.inode.indirect = -1;
+		}
+	
 		if (block != null) {
 			int indirContainer = (ftEnt.inode.length / 512) - 11;
             short result = SysLib.bytes2short(block, indirContainer * 2);
@@ -118,7 +126,7 @@ public class FileSystem
 		ftEnt.seekPtr = 0;
 		ftEnt.inode.toDisk(ftEnt.iNumber);
 		return true;
-	}	
+	}
     
 	public int fsize(FileTableEntry ftEnt)
 	{
@@ -342,8 +350,5 @@ public class FileSystem
 
         return size;
     }
-    
-    
-
-
+   
 }
