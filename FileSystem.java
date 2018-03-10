@@ -149,6 +149,33 @@ public class FileSystem
     
 	private boolean deallocAllBlocks(FileTableEntry ftEnt)
 	{
-		
+		if (ftEnt == null || ftEnt.count > 1)
+			return false;
+
+		byte[] block = new byte[Disk.blockSize];
+		SysLib.rawread(ftEnt.inode.indirect, buffer);
+		ftEnt.inode.indirect = -1;
+
+		if (block != null) {
+			int indirContainer = (ftEnt.inode.length / 512) - 11;
+            short result = SysLib.bytes2short(block, indirContainer * 2);
+            for (int i = 0; i < indirContainer; i++) {
+            	superblock.returnBlock(result);
+            	result = SysLib.bytes2short(block, indirContainer * 2);
+            }
+			ftEnt.inode.indirect = -1;
+		}
+		block = null;
+
+		for (int i = 0; i < ftEnt.inode.directSize; i++) {
+			superblock.returnBlock(ftEnt.inode.direct[i]);
+			ftEnt.inode.direct[i] = -1;
+		}
+
+
+		ftEnt.inode.length = 0;
+		ftEnt.seekPtr = 0;
+		ftEnt.inode.toDisk(ftEnt.iNumber);
+		return true;
 	}
 }
