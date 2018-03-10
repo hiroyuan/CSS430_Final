@@ -8,6 +8,8 @@ public class FileSystem
 	private final int SEEK_CUR = 1;
 	private final int SEEK_END = 2;
 	
+	private final int MAX_BYTES = 512;
+	
 	public FileSystem(int diskBlocks)
 	{
 		superblock = new SuperBlock(diskBlocks);
@@ -63,18 +65,24 @@ public class FileSystem
 	}	
 		
     //done
-	public boolean close(FileTableEntry ftEnt) 
+	public int close(FileTableEntry ftEnt) 
 	{
+		//If this file table entry is null return error
+		if(ftEnt == null)
+			return -1;
+		
 		synchronized(ftEnt)
         {
             ftEnt.count--;
-            if(count > 0)
+            if(ftEnt.count <= 0)
             {
-                return true;
+                boolean check = filetable.ffree(ftEnt)
+				if(check) return 0;
+				return -1;
             }
             else
             {
-                return filetable.ffree(ftEnt);
+                return -1;
             }
         }
 	}
@@ -91,14 +99,33 @@ public class FileSystem
     
 	public int read(FileTableEntry ftEnt, byte[] buffer)
 	{
-		if()
-        {
-            
-        }
-        else
-        {
-            return ERROR;
-        }
+		int byteRead = 0;
+		int currByte = 0;
+		
+		if(ftEnt == null || buffer == null)		//Error cases
+			return -1;
+		synchronized(ftEnt)
+		{
+			int blockToRead = ftEnt.inode.findTargetBlock(ftEnt.seekPtr);
+			if(blockToRead != -1)	//When the block exist
+			{
+				byte[] data = new byte[MAX_BYTES];
+				SysLib.rawread(blockToRead,data);
+				for(int i=0;i<buffer.length;i++)
+				{
+					currByte = ftEnt.seekPtr%Disk.blockSize;
+					if(currByte == 0)
+					{
+						int nextBlockToRead = ftEnt.inode.findTargetBlock(ftEnt.seekPtr);
+						SysLib.rawread(nextBlockToRead,data);
+					}
+					buffer[i] = data[currByte];
+					ftEnt.seekPtr++;
+				}
+				return buffer.length
+			}
+			return -1;		//If error happen
+		}
 	}
 		
 	public int write(FileTableEntry ftEnt, byte[] buffer)
