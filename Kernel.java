@@ -182,10 +182,10 @@ public class Kernel
                         return ERROR;
                      case STDOUT:
                         System.out.print( (String)args );
-                        break;
+                        return OK;
                      case STDERR:
                         System.err.print( (String)args );
-                        break;
+                        return OK;
                   }
                   myTcb = scheduler.getMyTcb();
                   if(myTcb != null)
